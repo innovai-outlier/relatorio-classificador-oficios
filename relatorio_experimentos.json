@@ -2,14 +2,16 @@
   "experimentos": [
     {
       "grupo": "IA Generativa (Agentes)",
-      "nome": "Cluster of Agents (GPT-4o + Llama3)",
+      "nome": "Classificador de Textos usando Cluster of Agents - CoA",
       "paradigma": "IA Generativa",
-      "modelo": "Cluster of Agents com GPT-4o e Llama3",
+      "modelo": ["GPT4o", "Llama3", "KeyBERT", "SBERT"],
       "pipeline": [
-        "Divisão dos ofícios por rótulo alvo",
-        "Execução de prompts e sumarização via API GPT-4o/Llama3",
-        "Agregação de outputs",
-        "Decisão via heurística"
+        "OCR for text extraction",
+        "Dataset split (train-test)",
+        "CoA build-up",
+        "CoA prompt training",
+        "CoA experience library",
+        "CoA prompt test"
       ],
       "hiperparametros": {},
       "resultados": {
@@ -19,301 +21,293 @@
         "acuracia": 0.0,
         "f1score": 0.0
       },
-      "observacoes": "Proposta inovadora, mas dependente de recursos computacionais externos e de curadoria humana. Impraticável sem infra dedicada.",
+      "observacoes": "Proposta inovadora, porém o seu tempo de desenvolvimento foi mal dimensionado por não considerar o gerenciamento de fluxo de tokens na API do modelo gpt_4o, o gerenciamento de memória RAM e o gerenciamento do aprendizado do modelo gpt_4o. Por fins administrativos, esse caso foi congelado, podendo ser reativado posteriormente.",
       "orientacoes": {
-        "sensibilidade": ["Não mensurada por falta de dados."],
-        "especificidade": ["Não mensurada por falta de dados."],
-        "precisao": ["Não mensurada por falta de dados."],
-        "acuracia": ["Pipeline interrompido por limitações práticas."],
-        "f1score": ["Recomenda-se reavaliar abordagem para contextos futuros."]
+        "sensibilidade": "Necessário executar o pipeline integralmente.",
+        "especificidade": "Necessário executar o pipeline integralmente.",
+        "precisao": "Necessário executar o pipeline integralmente.",
+        "acuracia": "Necessário executar o pipeline integralmente.",
+        "f1score": "Necessário executar o pipeline integralmente."
       },
-      "impacto": "Apesar do alto potencial, a abordagem esbarrou em limitações práticas de custo e escalabilidade."
+      "impacto": "Necessário executar o pipeline integralmente."
+    },
+    {
+      "grupo": "IA Generativa (LLMs)",
+      "nome": "Classificador de textos sumarizados LLM",
+      "paradigma": "IA Generativa",
+      "modelo": ["Llama3", "XL-Sum"],
+      "pipeline": [
+        "OCR for text extraction",
+        "Text Summarization",
+        "Dataset split (train, test)",
+        "Dataset Tokenization",
+        "Model LoRA training",
+        "Model test"
+      ],
+      "hiperparametros": {},
+      "resultados": {
+        "sensibilidade": 0.70,
+        "especificidade": 0.33,
+        "precisao": 0.50,
+        "acuracia": 0.51,
+        "f1score": 0.58
+      },
+      "observacoes": "Performance limitada por sumarização excessiva, resultando em perda de contexto jurídico relevante.",
+      "orientacoes": {
+        "sensibilidade": "Reconhece parte significativa dos bloqueios.",
+        "especificidade": "Pouca habilidade em diferenciar não-bloqueios.",
+        "precisao": "Razoável para tarefas de triagem inicial.",
+        "acuracia": "Necessita melhoria para uso produtivo.",
+        "f1score": "Necessário revisar abordagem de sumarização."
+      },
+      "impacto": "Serve como baseline para experimentos futuros envolvendo sumarização e LLMs."
+    },
+    {
+      "grupo": "IA Generativa (LLMs)",
+      "nome": "Classificador de textos inteiros LLM",
+      "paradigma": "IA Generativa",
+      "modelo": ["Llama3", "SBERT"],
+      "pipeline": [
+        "OCR for text extraction",
+        "Dataset split (train, test)",
+        "Dataset Tokenization",
+        "Model LoRA training",
+        "Model test"
+      ],
+      "hiperparametros": {},
+      "resultados": {
+        "sensibilidade": 0.40,
+        "especificidade": 0.28,
+        "precisao": 0.34,
+        "acuracia": 0.34,
+        "f1score": 0.36
+      },
+      "observacoes": "Perda acentuada de performance sem sumarização. Indica limitação do modelo ao tratar textos extensos.",
+      "orientacoes": {
+        "sensibilidade": "Risco elevado de deixar de detectar bloqueios.",
+        "especificidade": "Baixa confiança para não-bloqueios.",
+        "precisao": "Não recomendado para produção.",
+        "acuracia": "Modelo subótimo frente ao contexto.",
+        "f1score": "Requer reformulação da estratégia de entrada."
+      },
+      "impacto": "Evidencia a necessidade de ajuste fino para uso de LLMs em textos longos."
     },
     {
       "grupo": "Machine Learning Clássico",
-      "nome": "Random Forest",
-      "paradigma": "Machine Learning Clássico",
-      "modelo": "RandomForestClassifier",
+      "nome": "Random Forest com TF-IDF",
+      "paradigma": "Machine Learning",
+      "modelo": ["TF-IDF", "RandomForest"],
       "pipeline": [
-        "OCR Tesseract",
-        "TF-IDF Vectorizer",
-        "Random Forest Classifier"
+        "OCR for text extraction",
+        "Text cleaning & normalization",
+        "TF-IDF vectorization",
+        "Dataset split (train, test)",
+        "RandomForest training (grid search)",
+        "Model test"
       ],
       "hiperparametros": {
-        "n_estimators": [100, 200],
-        "max_depth": [5, 10, 15],
-        "max_features": ["auto", "sqrt"]
+        "n_estimators": [100, 200, 300],
+        "max_depth": [3, 5, 7],
+        "tfidf__max_features": [1000, 2000],
+        "tfidf__ngram_range": [[1, 1], [1, 2]]
       },
       "resultados": {
-        "sensibilidade": 0.71,
-        "especificidade": 0.65,
-        "precisao": 0.68,
-        "acuracia": 0.76,
-        "f1score": 0.69
+        "sensibilidade": 0.74,
+        "especificidade": 0.70,
+        "precisao": 0.73,
+        "acuracia": 0.73,
+        "f1score": 0.73
       },
-      "observacoes": "Desempenho razoável, mas instável em classes desbalanceadas.",
+      "observacoes": "Modelo robusto, resultados consistentes, mas aquém do XGBoost.",
       "orientacoes": {
-        "sensibilidade": [
-          "Aumentar amostras positivas pode melhorar o recall.",
-          "Analisar se há viés de amostragem.",
-          "Reforçar balanceamento de classes.",
-          "Investigar possíveis overfits."
-        ],
-        "especificidade": [
-          "Especificidade pode ser ampliada com features exclusivas para não-bloqueio.",
-          "Testar regularização.",
-          "Comparar com outros modelos para ajuste fino.",
-          "Cuidado com ofícios atípicos."
-        ],
-        "precisao": [
-          "Otimize limiar de decisão.",
-          "Testar combinações de features textuais.",
-          "Priorizar ofícios com risco jurídico.",
-          "Usar amostras hard-negative."
-        ],
-        "acuracia": [
-          "Expandir base de dados.",
-          "Ajustar hiperparâmetros via grid search.",
-          "Avaliar outras técnicas de ensemble.",
-          "Monitorar possíveis desvios temporais."
-        ],
-        "f1score": [
-          "Equilíbrio geral bom, mas foco na diversidade de dados pode ajudar.",
-          "Aprimorar análise dos casos limítrofes.",
-          "Monitorar efeitos de truncagem do texto.",
-          "Testar hibridação com embeddings."
-        ]
+        "sensibilidade": "Reconhece a maioria dos bloqueios, margem para ajuste.",
+        "especificidade": "Razoável separação dos não-bloqueios.",
+        "precisao": "Adequado para ambientes menos exigentes.",
+        "acuracia": "Útil para base comparativa.",
+        "f1score": "Soluções superiores disponíveis."
       },
-      "impacto": "Solução prática, fácil de implementar e entender. Útil para cenários com recursos limitados, mas requer monitoramento contínuo."
+      "impacto": "Base sólida para testes comparativos de modelos clássicos."
     },
     {
       "grupo": "Machine Learning Clássico",
-      "nome": "Logistic Regression",
-      "paradigma": "Machine Learning Clássico",
-      "modelo": "LogisticRegression",
+      "nome": "Logistic Regression com TF-IDF",
+      "paradigma": "Machine Learning",
+      "modelo": ["TF-IDF", "LogisticRegression"],
       "pipeline": [
-        "OCR Tesseract",
-        "TF-IDF Vectorizer",
-        "Logistic Regression Classifier"
+        "OCR for text extraction",
+        "Text cleaning & normalization",
+        "TF-IDF vectorization",
+        "Dataset split (train, test)",
+        "LogisticRegression training (grid search)",
+        "Model test"
       ],
       "hiperparametros": {
-        "C": [0.1, 1.0, 10],
-        "penalty": ["l2"],
-        "solver": ["liblinear"]
+        "C": [0.1, 1.0, 10.0],
+        "tfidf__max_features": [1000, 2000],
+        "tfidf__ngram_range": [[1, 1], [1, 2]]
       },
       "resultados": {
         "sensibilidade": 0.75,
         "especificidade": 0.71,
         "precisao": 0.73,
-        "acuracia": 0.75,
-        "f1score": 0.74
+        "acuracia": 0.73,
+        "f1score": 0.73
       },
-      "observacoes": "Modelo simples, mas robusto para baseline. Pode ser sensível a features não-informativas.",
+      "observacoes": "Resultados estáveis, pouca vantagem frente a Random Forest.",
       "orientacoes": {
-        "sensibilidade": [
-          "Cuidado com texto OCR truncado.",
-          "Validar se rótulos não estão ruidosos.",
-          "Avaliar ajuste de limiar.",
-          "Considerar regularização L1."
-        ],
-        "especificidade": [
-          "Adicionar features para distinguir não-bloqueios.",
-          "Aumentar amostras negativas.",
-          "Monitorar confusões com documentos similares.",
-          "Explorar bag-of-words mais amplo."
-        ],
-        "precisao": [
-          "Balancear recall e precisão de acordo com a demanda jurídica.",
-          "Testar penalidades customizadas.",
-          "Verificar se há redundância de features.",
-          "Ajustar peso das classes."
-        ],
-        "acuracia": [
-          "Grid search contínuo pode otimizar resultado.",
-          "Expandir e atualizar dataset periodicamente.",
-          "Monitorar qualidade do OCR.",
-          "Verificar proporção de treino/teste."
-        ],
-        "f1score": [
-          "Verificar estabilidade ao longo dos meses.",
-          "Aprimorar pré-processamento de texto.",
-          "Incluir análise semântica de contexto.",
-          "Checar outliers."
-        ]
+        "sensibilidade": "Boa identificação de bloqueios.",
+        "especificidade": "Pode ser melhorada com novos dados.",
+        "precisao": "Útil para cenários de decisão rápida.",
+        "acuracia": "Recomendado para validação cruzada.",
+        "f1score": "Modelo simples, manutenção facilitada."
       },
-      "impacto": "Ótima opção para projetos ágeis, onde transparência e velocidade são essenciais. Menos eficaz em contextos altamente variáveis."
+      "impacto": "Opção de baixa complexidade para validação."
     },
     {
       "grupo": "Machine Learning Clássico",
-      "nome": "SVM",
-      "paradigma": "Machine Learning Clássico",
-      "modelo": "Support Vector Machine",
+      "nome": "SVM com TF-IDF",
+      "paradigma": "Machine Learning",
+      "modelo": ["TF-IDF", "SVM"],
       "pipeline": [
-        "OCR Tesseract",
-        "TF-IDF Vectorizer",
-        "SVM Classifier"
+        "OCR for text extraction",
+        "Text cleaning & normalization",
+        "TF-IDF vectorization",
+        "Dataset split (train, test)",
+        "SVM training (grid search)",
+        "Model test"
       ],
       "hiperparametros": {
-        "C": [0.1, 1.0, 10],
-        "kernel": ["linear", "rbf"]
+        "C": [0.1, 1.0, 10.0],
+        "kernel": ["linear", "rbf"],
+        "tfidf__max_features": [1000, 2000],
+        "tfidf__ngram_range": [[1, 1], [1, 2]]
+      },
+      "resultados": {
+        "sensibilidade": 0.74,
+        "especificidade": 0.71,
+        "precisao": 0.73,
+        "acuracia": 0.73,
+        "f1score": 0.73
+      },
+      "observacoes": "Performance similar aos demais modelos clássicos.",
+      "orientacoes": {
+        "sensibilidade": "Satisfatório na detecção de bloqueios.",
+        "especificidade": "Aprimorável com tuning avançado.",
+        "precisao": "Boa precisão geral.",
+        "acuracia": "Adequado para ambientes controlados.",
+        "f1score": "Não supera XGBoost."
+      },
+      "impacto": "Complementar para estratégias ensemble."
+    },
+    {
+      "grupo": "Machine Learning Clássico",
+      "nome": "MLP (Multilayer Perceptron) com TF-IDF",
+      "paradigma": "Machine Learning",
+      "modelo": ["TF-IDF", "MLP"],
+      "pipeline": [
+        "OCR for text extraction",
+        "Text cleaning & normalization",
+        "TF-IDF vectorization",
+        "Dataset split (train, test)",
+        "MLP training (grid search)",
+        "Model test"
+      ],
+      "hiperparametros": {
+        "hidden_layer_sizes": [[50], [100]],
+        "activation": ["relu", "tanh"],
+        "max_iter": [200, 500],
+        "tfidf__max_features": [1000, 2000],
+        "tfidf__ngram_range": [[1, 1], [1, 2]]
       },
       "resultados": {
         "sensibilidade": 0.76,
         "especificidade": 0.74,
         "precisao": 0.75,
-        "acuracia": 0.76,
+        "acuracia": 0.75,
         "f1score": 0.75
       },
-      "observacoes": "Bom equilíbrio geral, porém pode ser computacionalmente caro em grandes massas.",
+      "observacoes": "MLP apresentou ligeira vantagem. Requer ajuste fino em dados maiores.",
       "orientacoes": {
-        "sensibilidade": [
-          "Atenção ao ajuste do parâmetro C.",
-          "Cuidado com overfitting em poucos exemplos.",
-          "Expandir base de treinamento.",
-          "Incluir features de posição/texto."
-        ],
-        "especificidade": [
-          "Testar kernels distintos.",
-          "Aumentar granularidade dos rótulos.",
-          "Adicionar features sintéticas.",
-          "Monitorar estabilidade temporal."
-        ],
-        "precisao": [
-          "Avaliar impacto do OCR em diferentes tipos de documento.",
-          "Testar thresholds alternativos.",
-          "Balancear penalização de classes.",
-          "Expandir análise semântica."
-        ],
-        "acuracia": [
-          "Grid search em mais hiperparâmetros.",
-          "Padronizar pré-processamento.",
-          "Testar diferentes estratégias de split.",
-          "Comparar com outros modelos clássicos."
-        ],
-        "f1score": [
-          "Aprimorar features contextuais.",
-          "Monitorar taxa de falsos positivos.",
-          "Avaliar impacto de features raras.",
-          "Revisar balanceamento do dataset."
-        ]
+        "sensibilidade": "Ligeira vantagem sobre outros clássicos.",
+        "especificidade": "Boa separação das classes.",
+        "precisao": "Recomendado para cenários dinâmicos.",
+        "acuracia": "Versátil em diferentes bases.",
+        "f1score": "Ótimo custo-benefício."
       },
-      "impacto": "Recomendado para datasets médios, com boa interpretabilidade e performance estável."
+      "impacto": "Versatilidade destacada para múltiplos cenários."
     },
     {
       "grupo": "Machine Learning Clássico",
-      "nome": "MLP",
-      "paradigma": "Machine Learning Clássico",
-      "modelo": "Multilayer Perceptron",
+      "nome": "XGBoost com TF-IDF (Melhor resultado)",
+      "paradigma": "Machine Learning",
+      "modelo": ["TF-IDF", "XGBoost"],
       "pipeline": [
-        "OCR Tesseract",
-        "TF-IDF Vectorizer",
-        "MLP Classifier"
+        "OCR for text extraction",
+        "Text cleaning & normalization",
+        "TF-IDF vectorization",
+        "Dataset split (train, test)",
+        "XGBoost training (grid search)",
+        "Model test"
       ],
       "hiperparametros": {
-        "hidden_layer_sizes": ["100", "50/50"],
-        "activation": ["relu", "tanh"],
-        "alpha": [0.0001, 0.001]
-      },
-      "resultados": {
-        "sensibilidade": 0.73,
-        "especificidade": 0.74,
-        "precisao": 0.73,
-        "acuracia": 0.73,
-        "f1score": 0.73
-      },
-      "observacoes": "Boa robustez, mas pode necessitar ajuste mais fino dos hiperparâmetros.",
-      "orientacoes": {
-        "sensibilidade": [
-          "Expandir camadas pode ajudar recall.",
-          "Regularização pode evitar overfit.",
-          "Testar arquiteturas menores.",
-          "Monitorar impacto de dropout."
-        ],
-        "especificidade": [
-          "Incluir features adicionais (palavras-chave).",
-          "Ajustar thresholds de ativação.",
-          "Balancear dataset.",
-          "Analisar padrão de erro."
-        ],
-        "precisao": [
-          "Ajustar learning rate.",
-          "Monitorar efeito de batch size.",
-          "Aprimorar limpeza de texto.",
-          "Revisar performance em subclasses."
-        ],
-        "acuracia": [
-          "Re-treinar periodicamente.",
-          "Padronizar pipeline de entrada.",
-          "Checar consistência de rótulos.",
-          "Documentar variações entre execuções."
-        ],
-        "f1score": [
-          "Analisar exemplos mal classificados.",
-          "Explorar técnicas de ensemble.",
-          "Monitorar dispersão do score.",
-          "Investigar padrões de sazonalidade."
-        ]
-      },
-      "impacto": "Boa performance geral, especialmente em contextos com padrões claros e poucos outliers."
-    },
-    {
-      "grupo": "Machine Learning Clássico",
-      "nome": "XGBoost",
-      "paradigma": "Machine Learning Clássico",
-      "modelo": "XGBoostClassifier",
-      "pipeline": [
-        "OCR Tesseract",
-        "TF-IDF Vectorizer",
-        "XGBoost Classifier"
-      ],
-      "hiperparametros": {
-        "learning_rate": [0.1],
-        "max_depth": [7],
-        "n_estimators": [200],
-        "max_features": [2000],
-        "ngram_range": [[1, 2]]
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "n_estimators": 50,
+        "tfidf__max_features": 1000,
+        "tfidf__ngram_range": [1, 2]
       },
       "resultados": {
         "sensibilidade": 0.90,
         "especificidade": 0.81,
-        "precisao": 0.89,
+        "precisao": 0.82,
         "acuracia": 0.85,
         "f1score": 0.86
       },
-      "observacoes": "Melhor desempenho geral, superando modelos anteriores em todos os critérios.",
+      "observacoes": "Modelo de melhor performance no ciclo atual. Métricas superam o baseline acordado. A configuração indicada atingiu ótimo equilíbrio entre sensibilidade, especificidade e precisão.",
       "orientacoes": {
-        "sensibilidade": [
-          "Aumentar ainda mais dados de bloqueio pode potencializar recall.",
-          "Testar com embeddings mais robustos.",
-          "Checar possíveis duplicidades no dataset.",
-          "Avaliar reamostragem em subclasses raras."
-        ],
-        "especificidade": [
-          "Testar thresholds personalizados para não-bloqueio.",
-          "Aprimorar features específicas do contexto jurídico.",
-          "Validar performance em novos tribunais.",
-          "Comparar com modelos de deep learning."
-        ],
-        "precisao": [
-          "Ajustar penalização de erros críticos.",
-          "Testar agregação de modelos (ensemble).",
-          "Monitorar performance após updates de OCR.",
-          "Expandir base de features contextuais."
-        ],
-        "acuracia": [
-          "Expandir treinamento com novos dados rotulados.",
-          "Automatizar monitoramento de drift.",
-          "Documentar pipeline para novos times.",
-          "Avaliar robustez em batches temporais."
-        ],
-        "f1score": [
-          "Monitorar taxa de falsos negativos.",
-          "Aprimorar tratamento de outliers.",
-          "Testar regularização alternativa.",
-          "Realizar explicabilidade com SHAP/LIME."
-        ]
+        "sensibilidade": "Modelo está altamente apto a identificar bloqueios corretamente.",
+        "especificidade": "Boa discriminação de não-bloqueios, baixo risco de falsos positivos.",
+        "precisao": "Excelente separação de classes, apto para cenários reais.",
+        "acuracia": "Pronto para uso produtivo, desde que monitorado e atualizado periodicamente.",
+        "f1score": "Modelo muito equilibrado para o contexto jurídico dos ofícios."
       },
-      "impacto": "Alto potencial de automação do fluxo de classificação de ofícios jurídicos, robusto frente a diferentes cenários e variações documentais."
+      "impacto": "Referência para produção. Recomendado como ponto de partida para novas versões e escalabilidade."
+    },
+    {
+      "grupo": "Teste Real com Massa Nova",
+      "nome": "Validação do melhor modelo com dados inéditos (XGBoost + TF-IDF)",
+      "paradigma": "Machine Learning",
+      "modelo": ["TF-IDF", "XGBoost"],
+      "pipeline": [
+        "OCR for text extraction",
+        "Text cleaning & normalization",
+        "TF-IDF vectorization",
+        "Aplicação do modelo treinado",
+        "Avaliação sobre 100 ofícios não vistos"
+      ],
+      "hiperparametros": {
+        "learning_rate": 0.1,
+        "max_depth": 3,
+        "n_estimators": 50,
+        "tfidf__max_features": 1000,
+        "tfidf__ngram_range": [1, 2]
+      },
+      "resultados": {
+        "sensibilidade": 0.48,
+        "especificidade": 0.90,
+        "precisao": 0.79,
+        "acuracia": 0.64,
+        "f1score": 0.59
+      },
+      "observacoes": "O desempenho caiu ao testar com nova massa de dados, principalmente na sensibilidade. O modelo manteve ótima especificidade e precisão, mas demonstrou dificuldade para detectar novos casos de bloqueio.",
+      "orientacoes": {
+        "sensibilidade": "Priorizar análise de erros de falsos negativos; revisar diversidade dos exemplos de bloqueio no treinamento.",
+        "especificidade": "Modelo robusto para não-bloqueios; cuidado com overfitting para exemplos negativos.",
+        "precisao": "Bom para aplicações que valorizam minimizar falsos positivos.",
+        "acuracia": "Requer incremento de dados e possíveis novas features.",
+        "f1score": "Sugere necessidade de ajustes finos no pipeline e avaliação de alternativas de extração de texto."
+      },
+      "impacto": "A queda de sensibilidade evidencia limitação de generalização do modelo; nova etapa de investigação é crucial para evolução da solução."
     }
   ]
 }
